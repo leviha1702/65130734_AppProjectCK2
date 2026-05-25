@@ -35,5 +35,6 @@ Nhập tình trạng đầu gối (mức độ đau, triệu chứng)
 
 Phân tích dữ liệu đầu vào và hiển thị kết quả
 
-<img width="296" height="310" alt="Ảnh màn hình 2026-05-26 lúc 00 49 05" src="https://github.com/user-attachments/assets/62402087-14b9-4e12-a11e-b82f6ac7ec2b" />
+<img width="298" height="253" alt="Ảnh màn hình 2026-05-26 lúc 00 49 51" src="https://github.com/user-attachments/assets/56133081-e3df-4635-9850-f938e8ab021c" />
+
 
