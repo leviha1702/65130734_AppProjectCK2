@@ -1,23 +1,40 @@
-🦵 AppSucKhoe – Ứng dụng hỗ trợ phục hồi chấn thương đầu gối
+🦵 KneeCare – Ứng dụng hỗ trợ phục hồi đầu gối
 
 📌 Giới thiệu
 
-AppSucKhoe là ứng dụng di động được phát triển trên nền tảng Android nhằm hỗ trợ người dùng – đặc biệt là người chơi thể thao – theo dõi tình trạng đầu gối và nhận gợi ý các bài tập phục hồi phù hợp.
+KneeCare là ứng dụng Android hỗ trợ người dùng theo dõi tình trạng đầu gối và nhận gợi ý bài tập phục hồi phù hợp. Ứng dụng hướng đến người chơi thể thao như bóng đá, chạy bộ hoặc những người gặp vấn đề về đau gối, lỏng khớp.
 
-Ứng dụng tập trung giải quyết một vấn đề thực tế:
-👉 Người bị đau hoặc yếu dây chằng đầu gối thường không biết nên tập gì và tập như thế nào cho đúng.
+Phiên bản hiện tại đã xây dựng thành công luồng hoạt động cơ bản: nhập dữ liệu → phân tích → hiển thị kết quả.
 
 🎯 Mục tiêu
 
-Hỗ trợ người dùng đánh giá nhanh tình trạng đầu gối
-Đưa ra gợi ý bài tập phục hồi phù hợp
-Giúp người dùng theo dõi lịch sử tập luyện
-Ứng dụng AI đơn giản trong việc đưa ra khuyến nghị
+Hỗ trợ người dùng đánh giá tình trạng đầu gối
+Đưa ra gợi ý tập luyện phù hợp
+Xây dựng nền tảng để tích hợp AI và Mobile ML
+Phát triển theo hướng ứng dụng thực tế trong chăm sóc sức khỏe
 
 ⚙️ Công nghệ sử dụng
 
 Ngôn ngữ: Java
 IDE: Android Studio
 UI: XML (Material Design cơ bản)
-Lưu trữ dữ liệu: SQLite / Local Storage
-AI: Rule-based (mô phỏng trí tuệ nhân tạo bằng logic điều kiện)
+Kiến trúc: Activity-based
+AI (hiện tại): Rule-based (logic điều kiện)
+
+📱 Chức năng hiện tại (Giai đoạn 1)
+
+Trang mới vào app 
+
+<img width="282" height="666" alt="Ảnh màn hình 2026-05-26 lúc 00 46 18" src="https://github.com/user-attachments/assets/21bd48f7-95b9-4633-bc92-31f3941ee663" />
+
+
+Nhập tình trạng đầu gối (mức độ đau, triệu chứng)
+
+<img width="296" height="310" alt="Ảnh màn hình 2026-05-26 lúc 00 49 05" src="https://github.com/user-attachments/assets/9d6692b0-92b7-42f0-9af5-cb3153c927d7" />
+
+
+Phân tích dữ liệu đầu vào và hiển thị kết quả
+
+<img width="298" height="253" alt="Ảnh màn hình 2026-05-26 lúc 00 49 51" src="https://github.com/user-attachments/assets/56133081-e3df-4635-9850-f938e8ab021c" />
+
+
