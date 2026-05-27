@@ -40,5 +40,6 @@ Phân tích dữ liệu đầu vào và hiển thị kết quả
 Trang đăng nhập và đăng ký
 
 <img width="299" height="365" alt="Ảnh màn hình 2026-05-27 lúc 14 02 06" src="https://github.com/user-attachments/assets/d2db29b6-d84b-4a81-a186-10239911b179" />
-<img width="299" height="365" alt="Ảnh màn hình 2026-05-27 lúc 14 02 06" src="https://github.com/user-attachments/assets/64a00d3d-274c-4d3a-b132-b4fcf59cb130" />
+<img width="299" height="402" alt="Ảnh màn hình 2026-05-27 lúc 13 38 40" src="https://github.com/user-attachments/assets/08694b00-4262-4e45-bfb0-0fc248a92b9b" />
+
 
