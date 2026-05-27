@@ -10,31 +10,24 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="KneeCare AI"
-        android:textSize="28sp"
+        android:text="TẠO TÀI KHOẢN"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:textColor="#1A237E"
-        android:layout_marginBottom="4dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Trợ lý phục hồi khớp gối thông minh"
-        android:textSize="14sp"
-        android:textColor="#555"
-        android:layout_marginBottom="32dp"/>
+        android:layout_marginBottom="24dp"/>
 
     <EditText
-        android:id="@+id/edtUsername"
+        android:id="@+id/edtRegUsername"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="Tên đăng nhập"
+        android:inputType="text"
         android:paddingLeft="12dp"
         android:background="@android:drawable/editbox_background"
         android:layout_marginBottom="12dp"/>
 
     <EditText
-        android:id="@+id/edtPassword"
+        android:id="@+id/edtRegPassword"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:hint="Mật khẩu"
@@ -44,20 +37,23 @@
         android:layout_marginBottom="24dp"/>
 
     <Button
-        android:id="@+id/btnLogin"
+        android:id="@+id/btnRegisterSubmit"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:text="Đăng Nhập"
+        android:text="Đăng Ký Ngay"
         android:backgroundTint="#1A237E"
         android:textColor="#FFFFFF"
         android:layout_marginBottom="16dp"/>
 
     <TextView
-        android:id="@+id/txtGoToRegister"
+        android:id="@+id/txtGoToLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Chưa có tài khoản? Đăng ký ngay"
+        android:text="Đã có tài khoản? Đăng nhập ngay"
         android:textColor="#1A237E"
         android:textStyle="bold"
-        android:textSize="14sp"/>
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:clickable="true"
+        android:focusable="true"/>
 </LinearLayout>
