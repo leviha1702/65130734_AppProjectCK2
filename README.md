@@ -37,4 +37,9 @@ Phân tích dữ liệu đầu vào và hiển thị kết quả
 
 <img width="298" height="253" alt="Ảnh màn hình 2026-05-26 lúc 00 49 51" src="https://github.com/user-attachments/assets/56133081-e3df-4635-9850-f938e8ab021c" />
 
+Trang đăng nhập và đăng ký
+
+<img width="299" height="365" alt="Ảnh màn hình 2026-05-27 lúc 14 02 06" src="https://github.com/user-attachments/assets/d2db29b6-d84b-4a81-a186-10239911b179" />
+<img width="299" height="402" alt="Ảnh màn hình 2026-05-27 lúc 13 38 40" src="https://github.com/user-attachments/assets/08694b00-4262-4e45-bfb0-0fc248a92b9b" />
+
 
