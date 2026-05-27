@@ -42,4 +42,11 @@ Trang đăng nhập và đăng ký
 <img width="299" height="365" alt="Ảnh màn hình 2026-05-27 lúc 14 02 06" src="https://github.com/user-attachments/assets/d2db29b6-d84b-4a81-a186-10239911b179" />
 <img width="299" height="402" alt="Ảnh màn hình 2026-05-27 lúc 13 38 40" src="https://github.com/user-attachments/assets/08694b00-4262-4e45-bfb0-0fc248a92b9b" />
 
+Giai đoạn 2:
+
+Trang chủ:        <img width="174" height="387" alt="Ảnh màn hình 2026-05-27 lúc 16 17 40" src="https://github.com/user-attachments/assets/5d29fd0b-a066-4d1d-ab39-74339c5cca45" />
+
+
+Trang cài đặt:         <img width="175" height="386" alt="Ảnh màn hình 2026-05-27 lúc 16 21 56" src="https://github.com/user-attachments/assets/743bfa14-094f-4e2f-9446-f0b5c7df21b0" />
+
 
