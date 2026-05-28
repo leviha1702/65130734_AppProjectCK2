@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:background="#FFFFFF">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Đánh giá tình trạng gối"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#1A237E"
+        android:layout_marginBottom="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mức độ đau đầu gối:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="8dp" />
+
+    <Spinner
+        android:id="@+id/spinnerPain"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginBottom="24dp"
+        android:spinnerMode="dropdown" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Triệu chứng đi kèm:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="8dp" />
+
+    <CheckBox
+        android:id="@+id/cbUnstable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Cảm giác khớp gối lỏng lẻo, không vững"
+        android:textSize="15sp"
+        android:layout_marginBottom="12dp" />
+
+    <CheckBox
+        android:id="@+id/cbRunPain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Đau tăng lên khi chạy hoặc đi bộ"
+        android:textSize="15sp"
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/btnAnalyze"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Phân Tích Kết Quả"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#283593"
+        android:padding="12dp" />
+
+</LinearLayout>

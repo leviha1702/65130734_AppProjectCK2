@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#F4F6F9"
+    android:padding="10dp">
+
+    <!-- Tiêu đề Trợ lý -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🤖 TRỢ LÝ ẢO KNEECARE BOT"
+        android:textAlignment="center"
+        android:textStyle="bold"
+        android:textColor="#1A237E"
+        android:textSize="18sp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Vùng cuộn tin nhắn thông minh -->
+    <ScrollView
+        android:id="@+id/scrollChat"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:layout_marginBottom="8dp">
+
+        <!-- Khung chứa động: Nơi các bong bóng chat Trái/Phải sinh ra -->
+        <LinearLayout
+            android:id="@+id/layoutChatContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:animateLayoutChanges="true" />
+    </ScrollView>
+
+    <!-- Thanh nhập liệu siêu tốc ở đáy -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@android:drawable/editbox_background"
+        android:padding="4dp">
+
+        <EditText
+            android:id="@+id/edtChatInput"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Hỏi ý kiến bác sĩ AI về khớp gối..."
+            android:background="@android:color/transparent"
+            android:padding="10dp"
+            android:textSize="15sp"
+            android:maxLines="3"/>
+
+        <Button
+            android:id="@+id/btnChatSend"
+            android:layout_width="75dp"
+            android:layout_height="40dp"
+            android:text="GỬI"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#1A237E"/>
+    </LinearLayout>
+</LinearLayout>
