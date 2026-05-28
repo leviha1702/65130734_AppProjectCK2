@@ -49,4 +49,14 @@ Trang chủ:        <img width="174" height="387" alt="Ảnh màn hình 2026-0
 
 Trang cài đặt:         <img width="175" height="386" alt="Ảnh màn hình 2026-05-27 lúc 16 21 56" src="https://github.com/user-attachments/assets/743bfa14-094f-4e2f-9446-f0b5c7df21b0" />
 
+Giai đoạn 3:
+
+Trang lịch sử: 
+
+<img width="175" height="387" alt="Ảnh màn hình 2026-05-28 lúc 13 42 20" src="https://github.com/user-attachments/assets/cfb45a7f-a1ef-4344-828e-3c2cc47749cd" />
+
+
+Trang chatbot: 
+
+<img width="175" height="387" alt="Ảnh màn hình 2026-05-28 lúc 13 42 03" src="https://github.com/user-attachments/assets/265d7fd9-6132-4d12-87dc-7b9731d4dd19" />
 
