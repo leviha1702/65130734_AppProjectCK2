@@ -6,16 +6,20 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment; // Đảm bảo dùng đúng thư viện AndroidX
-
+import androidx.fragment.app.Fragment;
+import cntt2.levietha.kneecare.BuildConfig;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.firebase.firestore.FirebaseFirestore; // Thêm thư viện Firebase
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -28,8 +32,8 @@ public class ResultFragment extends Fragment {
 
     TextView txtResult;
     ProgressBar progressBar;
+    Button btnGoToSchedule;
 
-    // Cấu hình OkHttpClient tối ưu thời gian chờ Timeout 60s cho Fragment
     private final java.util.concurrent.TimeUnit TimeUnit = java.util.concurrent.TimeUnit.SECONDS;
     private final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(60, TimeUnit)
@@ -37,10 +41,7 @@ public class ResultFragment extends Fragment {
             .readTimeout(60, TimeUnit)
             .build();
 
-    // API Key của bạn (Nên giữ API Key sạch này)
-    private static final String GEMINI_API_KEY = "AIzaSyBYeRDYKM9NeMK4UVfinIPI7OU-dVw7Qx8";
 
-    // Khai báo biến lưu thông số triệu chứng để dùng khi lưu lịch sử
     private String painLevel = "Nhẹ";
     private boolean unstable = false;
     private boolean runPain = false;
@@ -48,14 +49,23 @@ public class ResultFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        // 1. Nạp giao diện XML fragment_result
         View view = inflater.inflate(R.layout.fragment_result, container, false);
 
-        // 2. Ánh xạ giao diện thông qua đối tượng view
         txtResult = view.findViewById(R.id.txtResult);
         progressBar = view.findViewById(R.id.progressBar);
+        btnGoToSchedule = view.findViewById(R.id.btnGoToSchedule);
 
-        // 3. Đọc dữ liệu triệu chứng (Được truyền từ CheckFragment qua Bundle thay vì Intent)
+        if (btnGoToSchedule != null) {
+            btnGoToSchedule.setVisibility(View.GONE); // Ẩn nút lúc đang load
+            btnGoToSchedule.setOnClickListener(v -> {
+                if (getActivity() != null) {
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container, new ScheduleFragment())
+                            .commit();
+                }
+            });
+        }
+
         Bundle args = getArguments();
         if (args != null) {
             painLevel = args.getString("painLevel", "Nhẹ");
@@ -63,35 +73,39 @@ public class ResultFragment extends Fragment {
             runPain = args.getBoolean("runPain", false);
         }
 
-        // 4. Thiết lập Prompt gửi cho AI
+        // Prompt ép AI lên lịch chi tiết trong vòng 1 tháng
         String fullPrompt = "Bạn là chuyên gia trợ lý y tế ảo KneeCare. Nhiệm vụ của bạn là phân tích dữ liệu tình trạng đầu gối " +
-                "và trả về kết quả cấu trúc cụ thể: 1. Đánh giá chung tình trạng; 2. Liệt kê cụ thể danh mục bài tập phục hồi phù hợp; " +
-                "3. Lập một Lịch trình tập luyện (Lịch tập cụ thể từng ngày trong tuần).\n\n" +
+                "và trả về kết quả cấu trúc cụ thể rõ ràng:\n" +
+                "1. Đánh giá chung tình trạng hiện tại.\n" +
+                "2. Thiết kế một LỊCH TRÌNH TẬP LUYỆN PHỤC HỒI CHI TIẾT TRONG VÒNG 1 THÁNG (4 TUẦN). Chia rõ mục tiêu cho Tuần 1-2 (Giai đoạn thích nghi) và Tuần 3-4 (Giai đoạn tăng cường), kèm theo các bài tập cụ thể cho từng ngày.\n" +
+                "3. Lời khuyên y khoa về tần suất tập và các dấu hiệu cần dừng tập.\n\n" +
                 "Thông số hiện tại của bệnh nhân:\n" +
                 "- Mức độ đau: " + painLevel + "\n" +
                 "- Triệu chứng lỏng khớp: " + (unstable ? "Có bị lỏng khớp" : "Không bị lỏng khớp") + "\n" +
                 "- Tăng đau khi vận động chạy bộ: " + (runPain ? "Có tăng đau" : "Không tăng đau") + "\n\n" +
-                "Hãy phân tích bằng văn phong y khoa, phân cấp rõ ràng bằng các dấu gạch đầu dòng.";
+                "Hãy phân tích bằng văn phong y khoa, rõ ràng, gạch đầu dòng mạch lạc.";
 
         if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
-        txtResult.setText("Hệ thống KneeCare đang kết nối trực tiếp Cloud AI để phân tích và lên lịch tập vật lý trị liệu cho bạn...");
+        txtResult.setText("Hệ thống KneeCare đang kết nối Cloud AI để thiết lập phác đồ và lên lịch tập 1 tháng cho bạn...");
 
-        // 5. Triển khai gọi kết nối AI
         callGeminiAPI(fullPrompt);
 
         return view;
     }
 
     private void callGeminiAPI(String promptContent) {
-        // SỬA LỖI 404/429: Chuyển sang endpoint v1beta và chạy dòng mô hình 1.5-flash chuẩn y khoa, miễn phí ổn định
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" + GEMINI_API_KEY;
+        // Sử dụng API Key sạch của bạn
+        String cleanApiKey = BuildConfig.GEMINI_API_KEY;
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" + cleanApiKey;
 
+        // --- CẤU TRÚC LẠI JSON CHUẨN ĐỂ TRÁNH LỖI 400 ---
         JsonObject textObject = new JsonObject();
         textObject.addProperty("text", promptContent);
 
-        JsonObject partsObject = new JsonObject();
         com.google.gson.JsonArray partsArray = new com.google.gson.JsonArray();
         partsArray.add(textObject);
+
+        JsonObject partsObject = new JsonObject();
         partsObject.add("parts", partsArray);
 
         com.google.gson.JsonArray contentsArray = new com.google.gson.JsonArray();
@@ -100,12 +114,18 @@ public class ResultFragment extends Fragment {
         JsonObject rootObject = new JsonObject();
         rootObject.add("contents", contentsArray);
 
+        // Chuyển đối tượng sang chuỗi JSON chuẩn hóa (Tự động xử lý ký tự đặc biệt và xuống dòng)
         String jsonBody = rootObject.toString();
+
+        // Khai báo MediaType chuẩn xác, ép mã hóa UTF-8 để không lỗi font
         RequestBody body = RequestBody.create(jsonBody, MediaType.parse("application/json; charset=utf-8"));
 
+        // Tạo Request với đầy đủ Header định danh ngăn chặn lỗi 403 và 400
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
+                .addHeader("Content-Type", "application/json; charset=utf-8")
+                .addHeader("x-goog-api-client", "genai-android")
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
@@ -122,9 +142,8 @@ public class ResultFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 if (getActivity() == null) return;
 
-                if (response.isSuccessful()) {
+                if (response.isSuccessful() && response.body() != null) {
                     String responseBody = response.body().string();
-
                     try {
                         JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
                         String aiReply = jsonObject.getAsJsonArray("candidates")
@@ -134,30 +153,32 @@ public class ResultFragment extends Fragment {
                                 .get(0).getAsJsonObject()
                                 .get("text").getAsString();
 
-                        // Đổ dữ liệu lên màn hình và kích hoạt lưu trữ
                         getActivity().runOnUiThread(() -> {
+                            // Kiểm tra an toàn trước khi xử lý giao diện để tránh văng app
+                            if (getActivity() == null || isDetached() != false) return;
+
                             if (progressBar != null) progressBar.setVisibility(View.GONE);
                             txtResult.setText(aiReply);
 
-                            // ĐỒNG BỘ: Tự động lưu lịch tập và lưu vào danh sách Lịch sử
-                            saveToSystemStorage(aiReply);
+                            if (btnGoToSchedule != null) {
+                                btnGoToSchedule.setVisibility(View.VISIBLE);
+                            }
+
+                            // Thực hiện lưu dữ liệu cục bộ an toàn
+                            saveToLocalStorage(aiReply);
                         });
                     } catch (Exception e) {
                         getActivity().runOnUiThread(() -> {
                             if (progressBar != null) progressBar.setVisibility(View.GONE);
-                            txtResult.setText("Lỗi cấu trúc dữ liệu: " + e.getMessage());
+                            txtResult.setText("Lỗi xử lý dữ liệu phản hồi: " + e.getMessage());
                         });
                     }
                 } else {
-                    String errorBody = response.body() != null ? response.body().string() : "";
+                    // Đọc chi tiết phản hồi lỗi từ Google để debug nếu vẫn bị từ chối
+                    String errorBody = response.body() != null ? response.body().string() : "Không có chi tiết lỗi";
                     getActivity().runOnUiThread(() -> {
                         if (progressBar != null) progressBar.setVisibility(View.GONE);
-
-                        if (response.code() == 429) {
-                            txtResult.setText("Hạn mức API Key hiện tại đã cạn kiệt.\n\nVui lòng thay một API Key sạch khác từ Google AI Studio.");
-                        } else {
-                            txtResult.setText("Google AI từ chối yêu cầu.\nMã lỗi HTTP: " + response.code() + "\nChi tiết: " + errorBody);
-                        }
+                        txtResult.setText("Yêu cầu thất bại.\nMã lỗi HTTP: " + response.code() + "\nChi tiết cấu trúc lỗi: " + errorBody);
                     });
                 }
             }
@@ -165,18 +186,39 @@ public class ResultFragment extends Fragment {
     }
 
     /**
-     * Hàm tự động đóng gói lưu trữ lịch tập hiện tại và lưu lịch sử khám bệnh
+     * Hàm đẩy dữ liệu lên Cloud Firestore Database (Mục số 2 & Lớp Server trên sơ đồ)
      */
-    private void saveToSystemStorage(String aiReply) {
-        if (getActivity() == null) return;
+    private void syncDataToFirestore(String userId, String aiReply) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // Đóng gói dữ liệu chuẩn cấu trúc thực tế
+        Map<String, Object> medicalRecord = new HashMap<>();
+        medicalRecord.put("userId", userId);
+        medicalRecord.put("timestamp", System.currentTimeMillis());
+        medicalRecord.put("tflite_prediction", "Mức độ: " + painLevel + " (Cục bộ xử lý)");
+        medicalRecord.put("gemini_response", aiReply);
+        medicalRecord.put("symptoms_summary", "Đau: " + painLevel + " | Lỏng: " + unstable + " | Chạy: " + runPain);
+
+        // Đẩy lên collection "medical_history" trên Firebase Cloud
+        db.collection("medical_history")
+                .add(medicalRecord)
+                .addOnSuccessListener(documentReference -> {
+                    System.out.println("Đồng bộ dữ liệu Firebase Server thành công!");
+                })
+                .addOnFailureListener(e -> {
+                    System.err.println("Lỗi đồng bộ Firebase: " + e.getMessage());
+                });
+    }
+
+    /**
+     * Hàm lưu trữ cục bộ (Mục số 4 trên sơ đồ)
+     */
+    private void saveToLocalStorage(String aiReply) {
         SharedPreferences pref = getActivity().getSharedPreferences("KneeCareData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
 
-        // 1. Lưu đè lịch tập mới nhất phục vụ cho tab ScheduleFragment
         editor.putString("saved_ai_schedule", aiReply);
 
-        // 2. Đóng gói lưu vào danh sách lịch sử (HistoryFragment)
         String responseTime = new java.text.SimpleDateFormat("dd/MM/yyyy - HH:mm", java.util.Locale.getDefault()).format(new java.util.Date());
         String symptomsSummary = "Mức độ: " + painLevel + (unstable ? " | Lỏng khớp" : "") + (runPain ? " | Đau khi chạy" : "");
 
@@ -196,7 +238,6 @@ public class ResultFragment extends Fragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         editor.apply();
     }
 }

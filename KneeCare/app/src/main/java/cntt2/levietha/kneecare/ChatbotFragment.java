@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import cntt2.levietha.kneecare.BuildConfig;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -41,7 +42,7 @@ public class ChatbotFragment extends Fragment {
             .build();
 
     // API Key Gemini ổn định của bạn
-    private static final String GEMINI_API_KEY = "AIzaSyBYeRDYKM9NeMK4UVfinIPI7OU-dVw7Qx8";
+    private static final String cleanApiKey = BuildConfig.GEMINI_API_KEY;
 
     @Nullable
     @Override
@@ -129,7 +130,7 @@ public class ChatbotFragment extends Fragment {
     }
 
     private void sendMessageToGemini(String userPrompt) {
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + GEMINI_API_KEY;
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + cleanApiKey;
 
         // Tạo cấu trúc prompt chuyên sâu ép AI đóng vai chuyên gia y tế
         String systemContext = "Bạn là trợ lý y tế ảo chuyên sâu về khớp gối KneeCare. Hãy trả lời câu hỏi sau một cách ngắn gọn, chuẩn y khoa và dễ hiểu: " + userPrompt;
