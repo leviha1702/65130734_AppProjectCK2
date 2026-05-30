@@ -60,4 +60,16 @@
         android:textColor="#1A237E"
         android:textStyle="bold"
         android:textSize="14sp"/>
+    <TextView
+        android:id="@+id/txtForgotPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Quên mật khẩu?"
+        android:textColor="#E74C3C"
+        android:textSize="14sp"
+        android:textStyle="italic"
+        android:layout_gravity="center"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:padding="8dp"/>
 </LinearLayout>

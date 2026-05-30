@@ -82,13 +82,29 @@ public class SettingsFragment extends Fragment {
         });
 
         // 2. Xử lý logic Đăng xuất
+        // Tìm đến sự kiện Click của nút Đăng xuất (Logout) của bạn và thay bằng đoạn này:
         btnLogout.setOnClickListener(v -> {
-            Toast.makeText(getActivity(), "Đã đăng xuất tài khoản!", Toast.LENGTH_SHORT).show();
+            // 1. ĐĂNG XUẤT TRÊN CLOUD: Hủy phiên làm việc trực tuyến của Firebase Auth
+            com.google.firebase.auth.FirebaseAuth.getInstance().signOut();
 
-            // Chuyển người dùng quay lùi về màn hình Đăng nhập (MainActivity)
-            Intent intent = new Intent(getActivity(), MainActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK); // Xóa sạch lịch sử stack các màn hình trước
+            // 2. XÓA CỜ LOCAL: Chuyển cờ isLoggedIn về false và xóa dữ liệu đệm trong máy
+            android.content.SharedPreferences prefCheck = getActivity().getSharedPreferences("KneeCareData", android.content.Context.MODE_PRIVATE);
+            android.content.SharedPreferences.Editor editor = prefCheck.edit();
+            editor.putBoolean("isLoggedIn", false); // Ép cờ tự động đăng nhập về false
+            editor.putString("username", "Người dùng"); // Trả tên hiển thị về mặc định
+            editor.apply(); // Lưu lại ổ cứng dưới thiết bị
+
+            android.widget.Toast.makeText(getActivity(), "👋 Đã đăng xuất tài khoản an toàn!", android.widget.Toast.LENGTH_SHORT).show();
+
+            // 3. ĐIỀU HƯỚNG CHUẨN: Quay trở về màn hình Đăng nhập gốc (MainActivity)
+            android.content.Intent intent = new Intent(getActivity(), MainActivity.class);
+            // Xóa sạch các màn hình chạy ngầm trước đó để tránh người dùng bấm nút Back quay lại trang chủ
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
+
+            if (getActivity() != null) {
+                getActivity().finish(); // Đóng hẳn màn hình HomeActivity hiện tại
+            }
         });
 
         return view;

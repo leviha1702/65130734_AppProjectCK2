@@ -19,11 +19,7 @@
 
         <activity android:name=".HomeActivity" />
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".ResultFragment" />
-        <activity android:name=".CheckFragment" />
-        <activity android:name=".ChatbotFragment" />
-        <activity android:name=".ScheduleFragment" />
-        <activity android:name=".SettingsFragment" />
+        <activity android:name=".ForgotPasswordActivity" android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
