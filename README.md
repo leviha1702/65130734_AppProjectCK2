@@ -53,10 +53,17 @@ Giai đoạn 3:
 
 Trang lịch sử: 
 
-<img width="175" height="387" alt="Ảnh màn hình 2026-05-28 lúc 13 42 20" src="https://github.com/user-attachments/assets/cfb45a7f-a1ef-4344-828e-3c2cc47749cd" />
+<img width="173" height="384" alt="Ảnh màn hình 2026-05-29 lúc 01 41 52" src="https://github.com/user-attachments/assets/3887a85d-564c-4db0-bdc6-d63780249639" />
+
 
 
 Trang chatbot: 
 
 <img width="175" height="387" alt="Ảnh màn hình 2026-05-28 lúc 13 42 03" src="https://github.com/user-attachments/assets/265d7fd9-6132-4d12-87dc-7b9731d4dd19" />
+
+
+Trang lịch tập hồi phục từ phân tích kết quả AI cho thấy:
+
+<img width="173" height="384" alt="Ảnh màn hình 2026-05-29 lúc 01 41 52" src="https://github.com/user-attachments/assets/3a09082a-5adb-481c-9ba8-ec0457fd89b3" />
+<img width="175" height="386" alt="Ảnh màn hình 2026-05-29 lúc 01 41 30" src="https://github.com/user-attachments/assets/dba6f4fe-a1bc-4d7a-9505-1acd03a47d3d" />
 
