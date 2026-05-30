@@ -75,3 +75,7 @@ Hình ảnh thực tế trên Firebase Console:
 
 <img width="1439" height="776" alt="Ảnh màn hình 2026-05-30 lúc 12 48 51" src="https://github.com/user-attachments/assets/12b25973-fb50-4a3a-afe2-0babfe53cc36" />
 
+Và cả thông tin tài khoản user
+
+<img width="1437" height="778" alt="Ảnh màn hình 2026-05-30 lúc 13 10 54" src="https://github.com/user-attachments/assets/70311109-d5b4-480c-83a4-dbf6d14dafc2" />
+
