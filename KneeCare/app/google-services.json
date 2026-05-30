@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "780266779613",
+    "project_id": "kneecare-6e26d",
+    "storage_bucket": "kneecare-6e26d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:780266779613:android:ad4b99642cda888d8bfc34",
+        "android_client_info": {
+          "package_name": "cntt2.levietha.kneecare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4_ZHMiNeRX8QSDz4frH0fJH8iZYEuxU8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

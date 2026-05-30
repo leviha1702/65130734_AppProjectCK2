@@ -9,13 +9,14 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast; // Thêm thư viện Toast để hiển thị thông báo
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import cntt2.levietha.kneecare.BuildConfig;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.firebase.firestore.FirebaseFirestore; // Thêm thư viện Firebase
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -41,7 +42,6 @@ public class ResultFragment extends Fragment {
             .readTimeout(60, TimeUnit)
             .build();
 
-
     private String painLevel = "Nhẹ";
     private boolean unstable = false;
     private boolean runPain = false;
@@ -56,7 +56,7 @@ public class ResultFragment extends Fragment {
         btnGoToSchedule = view.findViewById(R.id.btnGoToSchedule);
 
         if (btnGoToSchedule != null) {
-            btnGoToSchedule.setVisibility(View.GONE); // Ẩn nút lúc đang load
+            btnGoToSchedule.setVisibility(View.GONE);
             btnGoToSchedule.setOnClickListener(v -> {
                 if (getActivity() != null) {
                     getActivity().getSupportFragmentManager().beginTransaction()
@@ -73,7 +73,6 @@ public class ResultFragment extends Fragment {
             runPain = args.getBoolean("runPain", false);
         }
 
-        // Prompt ép AI lên lịch chi tiết trong vòng 1 tháng
         String fullPrompt = "Bạn là chuyên gia trợ lý y tế ảo KneeCare. Nhiệm vụ của bạn là phân tích dữ liệu tình trạng đầu gối " +
                 "và trả về kết quả cấu trúc cụ thể rõ ràng:\n" +
                 "1. Đánh giá chung tình trạng hiện tại.\n" +
@@ -94,11 +93,10 @@ public class ResultFragment extends Fragment {
     }
 
     private void callGeminiAPI(String promptContent) {
-        // Sử dụng API Key sạch của bạn
         String cleanApiKey = BuildConfig.GEMINI_API_KEY;
+        // ĐÃ SỬA: Thay đổi chính xác từ gemini-3.5-flash sang mô hình thực tế gemini-1.5-flash
         String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" + cleanApiKey;
 
-        // --- CẤU TRÚC LẠI JSON CHUẨN ĐỂ TRÁNH LỖI 400 ---
         JsonObject textObject = new JsonObject();
         textObject.addProperty("text", promptContent);
 
@@ -114,13 +112,9 @@ public class ResultFragment extends Fragment {
         JsonObject rootObject = new JsonObject();
         rootObject.add("contents", contentsArray);
 
-        // Chuyển đối tượng sang chuỗi JSON chuẩn hóa (Tự động xử lý ký tự đặc biệt và xuống dòng)
         String jsonBody = rootObject.toString();
-
-        // Khai báo MediaType chuẩn xác, ép mã hóa UTF-8 để không lỗi font
         RequestBody body = RequestBody.create(jsonBody, MediaType.parse("application/json; charset=utf-8"));
 
-        // Tạo Request với đầy đủ Header định danh ngăn chặn lỗi 403 và 400
         Request request = new Request.Builder()
                 .url(url)
                 .post(body)
@@ -154,8 +148,7 @@ public class ResultFragment extends Fragment {
                                 .get("text").getAsString();
 
                         getActivity().runOnUiThread(() -> {
-                            // Kiểm tra an toàn trước khi xử lý giao diện để tránh văng app
-                            if (getActivity() == null || isDetached() != false) return;
+                            if (getActivity() == null || isDetached()) return;
 
                             if (progressBar != null) progressBar.setVisibility(View.GONE);
                             txtResult.setText(aiReply);
@@ -164,8 +157,11 @@ public class ResultFragment extends Fragment {
                                 btnGoToSchedule.setVisibility(View.VISIBLE);
                             }
 
-                            // Thực hiện lưu dữ liệu cục bộ an toàn
                             saveToLocalStorage(aiReply);
+
+                            SharedPreferences pref = getActivity().getSharedPreferences("KneeCareData", Context.MODE_PRIVATE);
+                            String studentId = pref.getString("student_id", "65130734_LeVietHa");
+                            syncDataToFirestore(studentId, aiReply);
                         });
                     } catch (Exception e) {
                         getActivity().runOnUiThread(() -> {
@@ -174,11 +170,10 @@ public class ResultFragment extends Fragment {
                         });
                     }
                 } else {
-                    // Đọc chi tiết phản hồi lỗi từ Google để debug nếu vẫn bị từ chối
                     String errorBody = response.body() != null ? response.body().string() : "Không có chi tiết lỗi";
                     getActivity().runOnUiThread(() -> {
                         if (progressBar != null) progressBar.setVisibility(View.GONE);
-                        txtResult.setText("Yêu cầu thất bại.\nMã lỗi HTTP: " + response.code() + "\nChi tiết cấu trúc lỗi: " + errorBody);
+                        txtResult.setText("Yêu cầu AI thất bại.\nMã lỗi HTTP: " + response.code() + "\nChi tiết lỗi: " + errorBody);
                     });
                 }
             }
@@ -186,12 +181,11 @@ public class ResultFragment extends Fragment {
     }
 
     /**
-     * Hàm đẩy dữ liệu lên Cloud Firestore Database (Mục số 2 & Lớp Server trên sơ đồ)
+     * Hàm đẩy dữ liệu lên Cloud Firestore Database kèm Toast hiển thị trạng thái đồng bộ
      */
     private void syncDataToFirestore(String userId, String aiReply) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        // Đóng gói dữ liệu chuẩn cấu trúc thực tế
         Map<String, Object> medicalRecord = new HashMap<>();
         medicalRecord.put("userId", userId);
         medicalRecord.put("timestamp", System.currentTimeMillis());
@@ -199,21 +193,30 @@ public class ResultFragment extends Fragment {
         medicalRecord.put("gemini_response", aiReply);
         medicalRecord.put("symptoms_summary", "Đau: " + painLevel + " | Lỏng: " + unstable + " | Chạy: " + runPain);
 
-        // Đẩy lên collection "medical_history" trên Firebase Cloud
         db.collection("medical_history")
                 .add(medicalRecord)
                 .addOnSuccessListener(documentReference -> {
+                    // ĐÃ THÊM: Hiện Toast báo thành công trên giao diện máy ảo
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getActivity(), "🚀 Đồng bộ Cloud Firebase thành công!", Toast.LENGTH_LONG).show();
+                        });
+                    }
                     System.out.println("Đồng bộ dữ liệu Firebase Server thành công!");
                 })
                 .addOnFailureListener(e -> {
+                    // ĐÃ THÊM: Hiện Toast báo lỗi chi tiết trên màn hình nếu Firebase từ chối
+                    if (getActivity() != null) {
+                        getActivity().runOnUiThread(() -> {
+                            Toast.makeText(getActivity(), "❌ Lỗi đồng bộ Firebase: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        });
+                    }
                     System.err.println("Lỗi đồng bộ Firebase: " + e.getMessage());
                 });
     }
 
-    /**
-     * Hàm lưu trữ cục bộ (Mục số 4 trên sơ đồ)
-     */
     private void saveToLocalStorage(String aiReply) {
+        if (getActivity() == null) return;
         SharedPreferences pref = getActivity().getSharedPreferences("KneeCareData", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
 

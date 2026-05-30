@@ -247,6 +247,102 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
         </GridLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🏋️ Thư viện bài tập phục hồi hôm nay"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="#2C3E50"
+                android:layout_marginBottom="12dp"/>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_toLeftOf="@id/btnDoneEx1"
+                        android:layout_alignParentLeft="true">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1. Tập cơ đùi trước (Quad Sets)"
+                            android:textStyle="bold"
+                            android:textSize="15sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Giữ căng cơ đùi trong 5 giây. Gồm 3 hiệp x 10 lần."
+                            android:textSize="13sp"
+                            android:textColor="#7F8C8D"/>
+                    </LinearLayout>
+                    <Button
+                        android:id="@+id/btnDoneEx1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:text="Hoàn thành"
+                        android:textSize="12sp"
+                        style="?android:attr/buttonStyleSmall"/>
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="8dp"
+                app:cardElevation="2dp">
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="12dp">
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_toLeftOf="@id/btnDoneEx2"
+                        android:layout_alignParentLeft="true">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="2. Giãn cơ bắp chân (Calf Stretch)"
+                            android:textStyle="bold"
+                            android:textSize="15sp"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Dùng khăn kéo mũi chân về phía thân mình. Giữ 30 giây."
+                            android:textSize="13sp"
+                            android:textColor="#7F8C8D"/>
+                    </LinearLayout>
+                    <Button
+                        android:id="@+id/btnDoneEx2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerInParent="true"
+                        android:text="Hoàn thành"
+                        android:textSize="12sp"
+                        style="?android:attr/buttonStyleSmall"/>
+                </RelativeLayout>
+            </androidx.cardview.widget.CardView>
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>
