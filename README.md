@@ -19,7 +19,7 @@ Ngôn ngữ: Java
 IDE: Android Studio
 UI: XML (Material Design cơ bản)
 Kiến trúc: Activity-based
-AI (hiện tại): Rule-based (logic điều kiện)
+AI (hiện tại): Gemini AI
 
 📱 Chức năng hiện tại (Giai đoạn 1)
 
@@ -79,3 +79,12 @@ Và cả thông tin tài khoản user
 
 <img width="1437" height="778" alt="Ảnh màn hình 2026-05-30 lúc 13 10 54" src="https://github.com/user-attachments/assets/70311109-d5b4-480c-83a4-dbf6d14dafc2" />
 
+Chức năng quên mật khẩu:
+
+<img width="1428" height="780" alt="Ảnh màn hình 2026-06-01 lúc 15 35 58" src="https://github.com/user-attachments/assets/4d8b10e3-511e-447a-bffd-e3a00437c3b1" />
+<img width="1494" height="824" alt="Ảnh màn hình 2026-06-01 lúc 15 37 26" src="https://github.com/user-attachments/assets/76245f79-c006-4a5f-90f2-27fbf7e6af2a" />
+
+Chức năng này hoạt động dựa trên cơ chế xác thực ủy quyền bảo mật của Firebase Authentication SDK, hoàn toàn không lưu trữ hay gửi mật khẩu thô để đảm bảo an toàn thông tin:
+- Xử lý tại Client (Ứng dụng Android): Khi nút gửi được bấm, ứng dụng sẽ gọi hàm API mAuth.sendPasswordResetEmail(email). Lệnh này đóng gói địa chỉ email và gửi một yêu cầu xác thực an toàn lên server đám mây.
+- Xử lý tại Server (Firebase Cloud): Máy chủ Google nhận yêu cầu, kiểm tra email xem có tồn tại trong hệ thống hay không. Nếu hợp lệ, Firebase sẽ tự động sinh ra một mã Token bảo mật dùng một lần (đính kèm trong đường dẫn URL) rồi kích hoạt cổng gửi thư để bắn email về cho người dùng.
+- Xác thực và Cập nhật dữ liệu: Khi người dùng đổi mật khẩu thành công trên trang web của Google, Firebase Server sẽ thực hiện thuật toán băm (Hash) mật khẩu mới đó và cập nhật lại vào cơ sở dữ liệu xác thực trực tuyến. Phiên làm việc cũ (Token cũ nếu có) dưới máy máy ảo sẽ tự động bị hủy để đảm bảo an toàn.
