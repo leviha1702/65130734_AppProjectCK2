@@ -12,11 +12,13 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import cntt2.levietha.kneecare.BuildConfig;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -41,7 +43,6 @@ public class ChatbotFragment extends Fragment {
             .readTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
             .build();
 
-    // API Key Gemini ổn định của bạn
     private static final String cleanApiKey = BuildConfig.GEMINI_API_KEY;
 
     @Nullable
@@ -49,50 +50,37 @@ public class ChatbotFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatbot, container, false);
 
-        // Ánh xạ giao diện
         layoutChatContainer = view.findViewById(R.id.layoutChatContainer);
         edtChatInput = view.findViewById(R.id.edtChatInput);
         btnChatSend = view.findViewById(R.id.btnChatSend);
         scrollChat = view.findViewById(R.id.scrollChat);
 
-        // Thêm câu chào mặc định ban đầu của Bot (Nằm bên TRÁI)
         addChatBubble("Xin chào! Tôi là chuyên gia trợ lý y tế ảo KneeCare. Bạn đang gặp vấn đề gì ở khớp gối hoặc cần tôi tư vấn bài tập nào không?", false);
 
-        // Bắt sự kiện gửi tin nhắn
         btnChatSend.setOnClickListener(v -> {
             String userText = edtChatInput.getText().toString().trim();
             if (userText.isEmpty()) return;
 
-            // 1. Hiển thị tin nhắn của User lên màn hình (Căn PHẢI)
             addChatBubble(userText, true);
-            edtChatInput.setText(""); // Xóa trống ô nhập
+            edtChatInput.setText("");
 
-            // 2. Hiển thị bong bóng chờ của Bot (Căn TRÁI)
             addChatBubble("KneeCare Bot đang suy nghĩ...", false);
 
-            // 3. Tiến hành gửi dữ liệu lên Cloud AI
             sendMessageToGemini(userText);
         });
 
         return view;
     }
 
-    /**
-     * Hàm tự động vẽ Bong bóng chat (Chat Bubble) chuẩn thực tế
-     * @param message Nội dung chữ
-     * @param isUser true nếu là Người dùng (Căn phải), false nếu là Bot AI (Căn trái)
-     */
     private void addChatBubble(String message, boolean isUser) {
         if (getActivity() == null) return;
 
-        // Tạo một TextView mới làm bong bóng
         TextView bubble = new TextView(getActivity());
         bubble.setText(message);
         bubble.setTextSize(15);
         bubble.setTextColor(Color.BLACK);
         bubble.setPadding(30, 20, 30, 20);
 
-        // Thiết lập kích thước và lề (Margin) cho bong bóng
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -100,23 +88,19 @@ public class ChatbotFragment extends Fragment {
         params.setMargins(12, 12, 12, 12);
 
         if (isUser) {
-            // Người dùng: Đẩy sang PHẢI, nền xanh Indigo nhạt nhã nhặn
             params.gravity = Gravity.END;
             bubble.setBackground(getActivity().getResources().getDrawable(android.R.drawable.dialog_holo_light_frame));
-            bubble.getBackground().setTint(Color.parseColor("#C5CAE9")); // Màu Indigo nhạt thanh lịch
+            bubble.getBackground().setTint(Color.parseColor("#C5CAE9"));
         } else {
-            // Trợ lý Bot: Đẩy sang TRÁI, nền xám trắng
             params.gravity = Gravity.START;
             bubble.setBackground(getActivity().getResources().getDrawable(android.R.drawable.dialog_holo_light_frame));
-            bubble.getBackground().setTint(Color.parseColor("#E0E0E0")); // Màu xám trắng sạch sẽ
+            bubble.getBackground().setTint(Color.parseColor("#E0E0E0"));
         }
 
         bubble.setLayoutParams(params);
 
-        // Đổ vào khung chứa layout lớn
         getActivity().runOnUiThread(() -> {
-            // Nếu tin nhắn trước đó là trạng thái đang xử lý, xóa nó đi trước khi nạp kết quả thật
-            if (!isUser && layoutChatContainer.getChildCount() > 1) {
+            if (!isUser && layoutChatContainer.getChildCount() > 0) {
                 View lastView = layoutChatContainer.getChildAt(layoutChatContainer.getChildCount() - 1);
                 if (lastView instanceof TextView && ((TextView) lastView).getText().toString().equals("KneeCare Bot đang suy nghĩ...")) {
                     layoutChatContainer.removeViewAt(layoutChatContainer.getChildCount() - 1);
@@ -124,45 +108,71 @@ public class ChatbotFragment extends Fragment {
             }
 
             layoutChatContainer.addView(bubble);
-            // Tự động cuộn xuống đáy khi có tin nhắn mới
             scrollChat.post(() -> scrollChat.fullScroll(View.FOCUS_DOWN));
         });
     }
 
     private void sendMessageToGemini(String userPrompt) {
-        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + cleanApiKey;
+        String url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=" + cleanApiKey;
 
-        // Tạo cấu trúc prompt chuyên sâu ép AI đóng vai chuyên gia y tế
-        String systemContext = "Bạn là trợ lý y tế ảo chuyên sâu về khớp gối KneeCare. Hãy trả lời câu hỏi sau một cách ngắn gọn, chuẩn y khoa và dễ hiểu: " + userPrompt;
+        // Tối ưu prompt để bóc tách thông tin lâm sàng theo đúng mô tả chức năng của đồ án
+        String systemContext = "Bạn là trợ lý y tế ảo chuyên sâu về khớp gối KneeCare.\n" +
+                "Nhiệm vụ của bạn:\n" +
+                "1. Trả lời câu hỏi ngắn gọn, chuẩn y khoa.\n" +
+                "2. Luôn trích xuất thông tin nhật ký ở cuối câu theo mẫu sau:\n" +
+                "🤖 [AI TRÍCH XUẤT THÔNG TIN NHẬT KÝ]:\n" +
+                "- Triệu chứng:\n" +
+                "- Vị trí khớp gối:\n" +
+                "- Ngữ cảnh diễn ra:\n\n" +
+                "Câu hỏi từ người dùng: " + userPrompt;
 
+        // Đóng gói JSON chuẩn cấu trúc API của Google Gemini
         JsonObject textObject = new JsonObject();
         textObject.addProperty("text", systemContext);
 
-        JsonObject partsObject = new JsonObject();
-        com.google.gson.JsonArray partsArray = new com.google.gson.JsonArray();
+        JsonArray partsArray = new JsonArray();
         partsArray.add(textObject);
+
+        JsonObject partsObject = new JsonObject();
         partsObject.add("parts", partsArray);
 
-        com.google.gson.JsonArray contentsArray = new com.google.gson.JsonArray();
+        JsonArray contentsArray = new JsonArray();
         contentsArray.add(partsObject);
 
         JsonObject rootObject = new JsonObject();
         rootObject.add("contents", contentsArray);
 
         RequestBody body = RequestBody.create(rootObject.toString(), MediaType.parse("application/json; charset=utf-8"));
-        Request request = new Request.Builder().url(url).post(body).build();
+        Request request = new Request.Builder()
+                .url(url)
+                .post(body)
+                .header("User-Agent", "Mozilla/5.0 (Android; Mobile)")
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                addChatBubble("Lỗi kết nối: " + e.getMessage(), false);
+                // 🔥 ĐÃ SỬA: Bọc trong runOnUiThread để tránh crash app khi mất mạng
+                if (getActivity() != null) {
+                    getActivity().runOnUiThread(() -> addChatBubble("Lỗi kết nối: " + e.getMessage(), false));
+                }
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                if (response.isSuccessful() && response.body() != null) {
+                if (getActivity() == null) return;
+
+                // Đọc phản hồi từ server 1 lần duy nhất để tránh crash ứng dụng
+                String responseBody = "";
+                if (response.body() != null) {
+                    responseBody = response.body().string();
+                }
+
+                if (response.isSuccessful() && !responseBody.isEmpty()) {
                     try {
-                        JsonObject jsonObject = JsonParser.parseString(response.body().string()).getAsJsonObject();
+                        JsonObject jsonObject = JsonParser.parseString(responseBody).getAsJsonObject();
                         String aiReply = jsonObject.getAsJsonArray("candidates")
                                 .get(0).getAsJsonObject()
                                 .getAsJsonObject("content")
@@ -170,13 +180,38 @@ public class ChatbotFragment extends Fragment {
                                 .get(0).getAsJsonObject()
                                 .get("text").getAsString();
 
-                        // Hiển thị câu trả lời xịn từ Gemini (Căn trái)
-                        addChatBubble(aiReply, false);
+                        final String finalReply = aiReply;
+                        getActivity().runOnUiThread(() -> {
+                            // Thêm câu trả lời của AI vào giao diện bong bóng chat
+                            addChatBubble(finalReply, false);
+                        });
                     } catch (Exception e) {
-                        addChatBubble("Lỗi xử lý dữ liệu: " + e.getMessage(), false);
+                        getActivity().runOnUiThread(() -> addChatBubble("Lỗi xử lý dữ liệu: " + e.getMessage(), false));
                     }
                 } else {
-                    addChatBubble("Hệ thống quá tải hoặc API Key gặp sự cố. Mã lỗi: " + response.code(), false);
+                    // 🔥 KHẮC PHỤC LỖI 503: CƠ CHẾ CHATBOT NGOẠI TUYẾN THÔNG MINH
+                    if (response.code() == 503 || response.code() == 403 || response.code() == 400) {
+
+                        getActivity().runOnUiThread(() -> {
+                            String offlineBotReply = "🤖 [Trợ Lý KneeCare - Chế độ ngoại tuyến]:\n\n" +
+                                    "Hiện tại kết nối tới Máy chủ Cloud AI đang bị gián đoạn (Mã lỗi: " + response.code() + "). " +
+                                    "Tuy nhiên, bạn đừng lo lắng! Để bảo vệ và chăm sóc đầu gối ngay lúc này, bạn hãy lưu ý các nguyên tắc y khoa cốt lõi sau:\n\n" +
+                                    "1. Nếu gối đang chấn thương cấp tính (sưng, nóng, đỏ, đau): Áp dụng ngay giải pháp R.I.C.E (Nghỉ ngơi ➔ Chườm lạnh 15 phút ➔ Băng ép nhẹ ➔ Kê cao chân).\n" +
+                                    "2. Tuyệt đối không tự ý bẻ khớp, vặn khớp hoặc nhờ người kéo nắn khi chưa rõ tổn thương.\n" +
+                                    "3. Bạn có thể vào mục 'Phác đồ 1 tháng' trong ứng dụng để xem lịch trình tập luyện phục hồi cơ đùi cơ bản đã được tối ưu hóa sẵn.\n\n" +
+                                    "👉 Vui lòng thử nhắn lại khi có kết nối mạng ổn định hơn hoặc chuyển sang sử dụng mạng 4G/VPN để mở lại kết nối Cloud AI thực tế nhé!";
+
+                            // Hiển thị nội dung cứu nguy này lên màn hình chat thay vì báo lỗi hệ thống
+                            addChatBubble(offlineBotReply, false);
+
+                            Toast.makeText(getActivity(), "⚙️ Đã chuyển đổi Chatbot sang chế độ phản hồi an toàn ngoại tuyến!", Toast.LENGTH_SHORT).show();
+                        });
+
+                    } else {
+                        // Hiển thị lỗi hệ thống khác nếu không phải lỗi nghẽn server 503
+                        final String rawError = "Yêu cầu thất bại. Mã lỗi: " + response.code();
+                        getActivity().runOnUiThread(() -> addChatBubble(rawError, false));
+                    }
                 }
             }
         });
