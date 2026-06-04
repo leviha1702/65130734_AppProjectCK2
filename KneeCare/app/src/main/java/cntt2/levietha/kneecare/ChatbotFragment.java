@@ -2,6 +2,7 @@ package cntt2.levietha.kneecare;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -57,16 +58,39 @@ public class ChatbotFragment extends Fragment {
 
         addChatBubble("Xin chào! Tôi là chuyên gia trợ lý y tế ảo KneeCare. Bạn đang gặp vấn đề gì ở khớp gối hoặc cần tôi tư vấn bài tập nào không?", false);
 
+        // Bắt sự kiện gửi tin nhắn (Tìm đoạn code này trong onCreateView và thay thế)
         btnChatSend.setOnClickListener(v -> {
             String userText = edtChatInput.getText().toString().trim();
             if (userText.isEmpty()) return;
 
+            // 1. Hiển thị tin nhắn của User lên màn hình (Căn PHẢI)
             addChatBubble(userText, true);
-            edtChatInput.setText("");
+            edtChatInput.setText(""); // Xóa trống ô nhập
 
+            // 2. Hiển thị bong bóng chờ của Bot (Căn TRÁI)
             addChatBubble("KneeCare Bot đang suy nghĩ...", false);
 
+            // 3. 🔥 GỌI ĐÚNG HÀM CÓ SẴN TRONG CODE CỦA BẠN ĐỂ GỬI ĐI
             sendMessageToGemini(userText);
+
+            // 4. 🔥 KÍCH HOẠT BỘ ĐẾM NGƯỢC CHỐNG SPAM LỖI 429
+            btnChatSend.setEnabled(false); // Khóa nút Gửi ngay lập tức
+
+            // Đếm ngược 5 giây (5000 mili-giây), mỗi bước giảm 1 giây (1000 mili-giây)
+            new android.os.CountDownTimer(5000, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    // Hiển thị số giây đếm ngược lên nút bấm
+                    btnChatSend.setText("" + (millisUntilFinished / 1000) + "s");
+                }
+
+                @Override
+                public void onFinish() {
+                    // Hết 5 giây, khôi phục lại nút bấm về trạng thái ban đầu
+                    btnChatSend.setEnabled(true);
+                    btnChatSend.setText("GỬI");
+                }
+            }.start();
         });
 
         return view;

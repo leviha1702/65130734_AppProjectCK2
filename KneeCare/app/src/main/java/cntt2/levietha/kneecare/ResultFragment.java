@@ -35,6 +35,7 @@ public class ResultFragment extends Fragment {
     private TextView txtResult;
     private ProgressBar progressBar;
     private Button btnGoToSchedule;
+    private boolean isApiCalling = false;
 
     private final OkHttpClient client = new OkHttpClient.Builder()
             .connectTimeout(60, java.util.concurrent.TimeUnit.SECONDS)
@@ -88,6 +89,13 @@ public class ResultFragment extends Fragment {
         txtResult.setText("Hệ thống KneeCare đang kết nối Cloud AI để thiết lập phác đồ và lên lịch tập 1 tháng cho bạn...");
 
         callGeminiAPI(fullPrompt);
+        if (!isApiCalling) {
+            isApiCalling = true; // Khóa luồng ngay lập tức
+            if (progressBar != null) progressBar.setVisibility(View.VISIBLE);
+            txtResult.setText("Hệ thống KneeCare đang kết nối Cloud AI...");
+
+            callGeminiAPI(fullPrompt);
+        }
 
         return view;
     }
@@ -126,6 +134,7 @@ public class ResultFragment extends Fragment {
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
+                isApiCalling = false;
                 if (getActivity() == null) return;
                 getActivity().runOnUiThread(() -> {
                     if (progressBar != null) progressBar.setVisibility(View.GONE);
@@ -137,11 +146,8 @@ public class ResultFragment extends Fragment {
             public void onResponse(Call call, Response response) throws IOException {
                 if (getActivity() == null) return;
 
-                // Đọc dữ liệu phản hồi một lần duy nhất để tránh crash
-                String responseBody = "";
-                if (response.body() != null) {
-                    responseBody = response.body().string();
-                }
+                String responseBody = response.body() != null ? response.body().string() : "";
+                isApiCalling = false;
 
                 if (response.isSuccessful() && !responseBody.isEmpty()) {
                     try {
@@ -234,10 +240,10 @@ public class ResultFragment extends Fragment {
 
                     } else {
                         // Hiển thị các mã lỗi hệ thống HTTP khác nếu có
-                        final String finalErrorLog = "Yêu cầu AI thất bại.\nMã lỗi HTTP: " + response.code() + "\nChi tiết: " + responseBody;
+                        final int code = response.code();
                         getActivity().runOnUiThread(() -> {
                             if (progressBar != null) progressBar.setVisibility(View.GONE);
-                            txtResult.setText(finalErrorLog);
+                            txtResult.setText("Yêu cầu AI dừng lại. Mã phản hồi: " + code + "\nHệ thống đã ngắt luồng gọi tự động.");
                         });
                     }
                 }
