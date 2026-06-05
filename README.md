@@ -88,3 +88,5 @@ Chức năng này hoạt động dựa trên cơ chế xác thực ủy quyền 
 - Xử lý tại Client (Ứng dụng Android): Khi nút gửi được bấm, ứng dụng sẽ gọi hàm API mAuth.sendPasswordResetEmail(email). Lệnh này đóng gói địa chỉ email và gửi một yêu cầu xác thực an toàn lên server đám mây.
 - Xử lý tại Server (Firebase Cloud): Máy chủ Google nhận yêu cầu, kiểm tra email xem có tồn tại trong hệ thống hay không. Nếu hợp lệ, Firebase sẽ tự động sinh ra một mã Token bảo mật dùng một lần (đính kèm trong đường dẫn URL) rồi kích hoạt cổng gửi thư để bắn email về cho người dùng.
 - Xác thực và Cập nhật dữ liệu: Khi người dùng đổi mật khẩu thành công trên trang web của Google, Firebase Server sẽ thực hiện thuật toán băm (Hash) mật khẩu mới đó và cập nhật lại vào cơ sở dữ liệu xác thực trực tuyến. Phiên làm việc cũ (Token cũ nếu có) dưới máy máy ảo sẽ tự động bị hủy để đảm bảo an toàn.
+
+Video demo app:  https://drive.google.com/file/d/1NhE39fnJ9WAtgRYWSYyijEAKEmBuUB-o/view?usp=sharing
